@@ -17,7 +17,7 @@ pub struct FileServer {
 }
 
 impl FileServer {
-    pub fn new(addr: impl ToSocketAddrs + Display) -> Result<Self, Error> {
+    pub fn http(addr: impl ToSocketAddrs + Display) -> Result<Self, Error> {
         info!("Starting file server on {}", addr);
         let server = Server::http(addr)?;
 

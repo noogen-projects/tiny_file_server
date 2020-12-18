@@ -2,6 +2,20 @@
 
 The simplest file server for web development purposes.
 
+```rust
+use env_logger::Env;
+use tiny_file_server::FileServer;
+
+fn main() {
+    env_logger::Builder::from_env(Env::default().default_filter_or("debug")).init();
+
+    FileServer::http("127.0.0.1:9080")
+        .expect("Can't create http server")
+        .run("path/to/static/files")
+        .expect("Server error");
+}
+```
+
 ## Development notes
 
 To check the project, use the following command:

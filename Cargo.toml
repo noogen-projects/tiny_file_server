@@ -12,6 +12,10 @@ repository = "https://github.com/noogen-projects/tiny_file_server"
 description = "The simplest file server for web development purposes"
 keywords = ["noogen", "simple", "tiny", "static", "file", "http", "server"]
 categories = ["web-programming::http-server", "development-tools::debugging"]
+exclude = [
+    ".git-pre-push.sh",
+    ".rustfmt.toml",
+]
 
 [dependencies]
 tiny_http = "0.7"

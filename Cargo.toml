@@ -10,7 +10,7 @@ license = "CC0-1.0"
 readme = "README.md"
 repository = "https://github.com/noogen-projects/tiny_file_server"
 description = "The simplest file server for web development purposes"
-keywords = ["noogen", "simple", "tiny", "static", "file", "http", "server"]
+keywords = ["noogen", "simple", "static", "http", "server"]
 categories = ["web-programming::http-server", "development-tools::debugging"]
 exclude = [
     ".git-pre-push.sh",

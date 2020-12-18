@@ -76,11 +76,11 @@ impl FileServer {
                 file_path.push(default_file);
             };
 
-            debug!("    Requested file: {}", file_path.display());
+            debug!("Requested file: {}", file_path.display());
 
             if !file_path.exists() {
                 let status = StatusCode(404);
-                debug!("    Status: {} ({})", status.default_reason_phrase(), status.0);
+                debug!("Status: {} ({})", status.default_reason_phrase(), status.0);
                 request.respond(Response::empty(status))?;
             } else {
                 match File::open(&file_path) {
@@ -99,8 +99,8 @@ impl FileServer {
                     }
                     Err(err) => {
                         let status = StatusCode(500);
-                        debug!("    Status: {} ({})", status.default_reason_phrase(), status.0);
-                        debug!("    Error: {:?}", err);
+                        debug!("Status: {} ({})", status.default_reason_phrase(), status.0);
+                        debug!("Error: {:?}", err);
                         request.respond(Response::empty(status))?;
                     }
                 }

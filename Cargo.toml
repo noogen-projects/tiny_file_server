@@ -1,0 +1,18 @@
+[package]
+name = "tiny_file_server"
+version = "0.1.0"
+authors = [
+    "Alexander XX <freecoder.xx@gmail.com>",
+    "Noogen Team <info.noogen@gmail.com>",
+]
+edition = "2018"
+license = "CC0-1.0"
+readme = "README.md"
+repository = "https://github.com/noogen-projects/tiny-file-server"
+description = "The simplest file server for web development purposes"
+keywords = ["noogen", "simple", "tiny", "static", "file", "http", "server"]
+categories = ["web-programming::http-server", "development-tools::debugging"]
+
+[dependencies]
+tiny_http = "0.7"
+log = "0.4"

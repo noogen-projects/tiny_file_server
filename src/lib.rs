@@ -1,3 +1,19 @@
+//! The simplest file server for web development purposes.
+//!
+//! ```no_run
+//! use env_logger::{Builder, Env};
+//! use tiny_file_server::FileServer;
+//!
+//! fn main() {
+//!     Builder::from_env(Env::default().default_filter_or("debug")).init();
+//!
+//!     FileServer::http("127.0.0.1:9080")
+//!         .expect("Server should be created")
+//!         .run("path/to/static/files")
+//!         .expect("Server should start");
+//! }
+//! ```
+
 use std::{
     borrow::Cow, collections::HashMap, error, ffi::OsStr, fmt::Display, fs::File, io, net::ToSocketAddrs,
     path::PathBuf, str::FromStr,

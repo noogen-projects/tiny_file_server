@@ -3,16 +3,16 @@
 The simplest file server for web development purposes.
 
 ```rust
-use env_logger::Env;
+use env_logger::{Builder, Env};
 use tiny_file_server::FileServer;
 
 fn main() {
-    env_logger::Builder::from_env(Env::default().default_filter_or("debug")).init();
+    Builder::from_env(Env::default().default_filter_or("debug")).init();
 
     FileServer::http("127.0.0.1:9080")
-        .expect("Can't create http server")
+        .expect("Server should be created")
         .run("path/to/static/files")
-        .expect("Server error");
+        .expect("Server should start");
 }
 ```
 
@@ -39,7 +39,7 @@ cargo +nightly fmt
 
 To enable autoformatting for IntelliJ IDEA with the Rust plugin:
 
-`Settings -> Languages and Frameworks -> Rust -> Rustfmt -> Run rustfmt on Save`
+`File -> Settings -> Languages & Frameworks -> Rust -> Rustfmt, check "Run rustfmt on Save"`
 
 To run clippy, use the following command:
 

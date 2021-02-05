@@ -55,6 +55,24 @@ impl FileServer {
         })
     }
 
+    pub fn with_default_file(mut self, file_name: impl Into<Cow<'static, str>>) -> Self {
+        self.set_default_file(file_name);
+        self
+    }
+
+    pub fn with_default_content_type(mut self, content_type: impl Into<Cow<'static, str>>) -> Self {
+        self.set_default_content_type(content_type);
+        self
+    }
+
+    pub fn with_content_type_by_extension(
+        mut self,
+        content_types: impl IntoIterator<Item = (&'static str, &'static str)>,
+    ) -> Self {
+        self.content_type_by_extension.extend(content_types);
+        self
+    }
+
     pub fn set_default_file(&mut self, file_name: impl Into<Cow<'static, str>>) {
         self.default_file = file_name.into();
     }
@@ -112,13 +130,13 @@ impl FileServer {
                                 .map_err(|_| io::Error::from(io::ErrorKind::Other))?,
                         );
                         request.respond(response)?;
-                    },
+                    }
                     Err(err) => {
                         let status = StatusCode(500);
                         debug!("Status: {} ({})", status.default_reason_phrase(), status.0);
                         debug!("Error: {:?}", err);
                         request.respond(Response::empty(status))?;
-                    },
+                    }
                 }
             };
         }

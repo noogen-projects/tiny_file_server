@@ -89,6 +89,10 @@ impl FileServer {
         &mut self.content_type_by_extension
     }
 
+    pub fn unblock(&self) {
+        self.server.unblock();
+    }
+
     pub fn run(&self, statics_path: impl Into<PathBuf>) -> Result<(), io::Error> {
         let statics_path = statics_path.into();
         info!("Listen incoming requests to {}", statics_path.display());

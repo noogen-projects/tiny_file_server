@@ -34,7 +34,7 @@ pub struct FileServer {
 
 impl FileServer {
     pub fn http(addr: impl ToSocketAddrs + Display) -> Result<Self, Error> {
-        info!("Starting file server on {}", addr);
+        info!("Starting file server on http://{}", addr);
         let server = Server::http(addr)?;
 
         let content_type_by_extension = [
@@ -134,13 +134,13 @@ impl FileServer {
                                 .map_err(|_| io::Error::from(io::ErrorKind::Other))?,
                         );
                         request.respond(response)?;
-                    }
+                    },
                     Err(err) => {
                         let status = StatusCode(500);
                         debug!("Status: {} ({})", status.default_reason_phrase(), status.0);
                         debug!("Error: {:?}", err);
                         request.respond(Response::empty(status))?;
-                    }
+                    },
                 }
             };
         }

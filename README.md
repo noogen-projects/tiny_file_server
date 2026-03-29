@@ -37,10 +37,6 @@ cargo +nightly fmt --check
 cargo +nightly fmt
 ```
 
-To enable autoformatting for IntelliJ IDEA with the Rust plugin:
-
-`File -> Settings -> Languages & Frameworks -> Rust -> Rustfmt, check "Run rustfmt on Save"`
-
 To run clippy, use the following command:
 
 ```shell script

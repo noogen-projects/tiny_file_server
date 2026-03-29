@@ -14,13 +14,17 @@
 //! }
 //! ```
 
-use std::{
-    borrow::Cow, collections::HashMap, error, ffi::OsStr, fmt::Display, fs::File, io, net::ToSocketAddrs,
-    path::PathBuf, str::FromStr,
-};
+use std::borrow::{Borrow, Cow};
+use std::collections::HashMap;
+use std::ffi::OsStr;
+use std::fmt::Display;
+use std::fs::File;
+use std::net::ToSocketAddrs;
+use std::path::PathBuf;
+use std::str::FromStr;
+use std::{error, io};
 
 use log::{debug, info};
-use std::borrow::Borrow;
 use tiny_http::{Header, Response, Server, StatusCode};
 
 pub type Error = Box<dyn error::Error + Send + Sync + 'static>;
@@ -30,11 +34,12 @@ pub struct FileServer {
     default_file: Cow<'static, str>,
     default_content_type: Cow<'static, str>,
     content_type_by_extension: HashMap<&'static str, &'static str>,
+    url_to_file: fn(&str, PathBuf, &str) -> PathBuf,
 }
 
 impl FileServer {
     pub fn http(addr: impl ToSocketAddrs + Display) -> Result<Self, Error> {
-        info!("Starting file server on http://{}", addr);
+        info!("Starting file server on http://{addr}");
         let server = Server::http(addr)?;
 
         let content_type_by_extension = [
@@ -43,8 +48,7 @@ impl FileServer {
             ("html", "text/html"),
             ("css", "text/css"),
         ]
-        .iter()
-        .cloned()
+        .into_iter()
         .collect();
 
         Ok(Self {
@@ -52,6 +56,7 @@ impl FileServer {
             default_file: "index.html".into(),
             default_content_type: "text/plain".into(),
             content_type_by_extension,
+            url_to_file,
         })
     }
 
@@ -73,12 +78,21 @@ impl FileServer {
         self
     }
 
+    pub fn with_url_to_file(mut self, url_to_file: fn(&str, PathBuf, &str) -> PathBuf) -> Self {
+        self.url_to_file = url_to_file;
+        self
+    }
+
     pub fn set_default_file(&mut self, file_name: impl Into<Cow<'static, str>>) {
         self.default_file = file_name.into();
     }
 
     pub fn set_default_content_type(&mut self, content_type: impl Into<Cow<'static, str>>) {
         self.default_content_type = content_type.into();
+    }
+
+    pub fn set_url_to_file(&mut self, url_to_file: fn(&str, PathBuf, &str) -> PathBuf) {
+        self.url_to_file = url_to_file;
     }
 
     pub fn content_type_by_extension(&self) -> &HashMap<&'static str, &'static str> {
@@ -104,15 +118,7 @@ impl FileServer {
                 request.headers()
             );
 
-            let mut file_path = statics_path.clone();
-            if request.url().len() > 1 {
-                for chunk in request.url().trim_start_matches('/').split('/') {
-                    file_path.push(chunk);
-                }
-            } else {
-                let default_file: &str = self.default_file.borrow();
-                file_path.push(default_file);
-            };
+            let file_path = (self.url_to_file)(request.url(), statics_path.clone(), self.default_file.borrow());
 
             debug!("Requested file: {}", file_path.display());
 
@@ -138,7 +144,7 @@ impl FileServer {
                     Err(err) => {
                         let status = StatusCode(500);
                         debug!("Status: {} ({})", status.default_reason_phrase(), status.0);
-                        debug!("Error: {:?}", err);
+                        debug!("Error: {err:?}");
                         request.respond(Response::empty(status))?;
                     },
                 }
@@ -147,4 +153,16 @@ impl FileServer {
         info!("File server socket is shutdown");
         Ok(())
     }
+}
+
+pub fn url_to_file(url: &str, statics_path: PathBuf, default_file: &str) -> PathBuf {
+    let mut file_path = statics_path;
+    if url.len() > 1 {
+        for chunk in url.trim_start_matches('/').split('/') {
+            file_path.push(chunk);
+        }
+    } else {
+        file_path.push(default_file);
+    };
+    file_path
 }
